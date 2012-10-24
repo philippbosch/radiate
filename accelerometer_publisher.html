@@ -5,10 +5,10 @@
         <title>radiate : accelerometer : publisher</title>
         <style>
             body {
-              font: 300% VT323, monospace;
-              padding: 20px;
-              background: #000;
-              color: #FFF;
+                font: 300% VT323, monospace;
+                padding: 20px;
+                background-color: #000;
+                color: #FFF;
             }
         </style>
         <link href="http://fonts.googleapis.com/css?family=VT323" rel="stylesheet" type="text/css">
@@ -16,8 +16,6 @@
     </head>
     <body>
         <div id="alpha">?</div>
-        <div id="beta">?</div>
-        <div id="gamma">?</div>
 
         <script src="http://code.jquery.com/jquery-latest.js"></script>
 
@@ -30,6 +28,7 @@
                     $(window).on('deviceorientation', function(e) {
                         $('#alpha').text(e.originalEvent.alpha);
                         currentAlpha = e.originalEvent.alpha;
+                        $('body').css('background', 'hsl(' + Math.round(currentAlpha) + ', 100%, 50%)')
                     });
 
                     setInterval(function() {
