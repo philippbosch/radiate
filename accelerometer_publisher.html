@@ -26,9 +26,10 @@
                     var previousAlpha = 0;
 
                     $(window).on('deviceorientation', function(e) {
-                        $('#alpha').text(e.originalEvent.alpha);
-                        currentAlpha = e.originalEvent.alpha;
-                        $('body').css('background', 'hsl(' + Math.round(currentAlpha) + ', 100%, 50%)')
+                        var alpha = Math.round(e.originalEvent.alpha);
+                        $('#alpha').text(alpha);
+                        currentAlpha = alpha;
+                        $('body').css('background', 'hsl(' + alpha + ', 100%, 50%)')
                     });
 
                     setInterval(function() {

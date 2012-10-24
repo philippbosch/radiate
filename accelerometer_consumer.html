@@ -28,7 +28,7 @@
                 channel.bind('update:orientation', function(data) {
                     var v = data.value.split('|');
                     $('#alpha').text(v[0]);
-                    $('body').css('background', 'hsl(' + Math.round(v[0]) + ', 100%, 50%)')
+                    $('body').css('background', 'hsl(' + v[0] + ', 100%, 50%)')
                 });
 
             })();
