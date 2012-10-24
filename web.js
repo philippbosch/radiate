@@ -2,39 +2,27 @@ var http = require('http');
 var redis = require('redis-url').connect(process.env.REDISTOGO_URL);
 var pusher = require('pusher-url').connect(process.env.PUSHER_URL);
 
-var server = http.createServer();
-
-server.on('request', function(req, res) {
-    var key = req.url.substr(1);
-
-    if (!key) {
-        res.end('Key missing.');
-    }
-
-    switch(req.method) {
-        case 'GET':
-            redis.get(key, function(err, value) {
-                res.end(value);
-            });
-            break;
-
-        case 'PUT':
-            var value = '';
-
-            req.on('data', function(chunk) {
-                value += chunk;
-            });
-
-            req.on('end', function() {
-                redis.set(key, value);
-                res.end('OK');
-                pusher.trigger(key, 'set', {'value': value});
-            });
-            break;
-    }
-});
+var express = require('express');
+var app = express();
+app.use(express.bodyParser());
 
 var port = process.env.PORT || 5000;
-server.listen(port, function() {
+
+app.get('/:key', function(req, res) {
+    redis.get(req.params.key, function(err, value) {
+        res.json({'value': value});
+    });
+});
+
+app.put('/:key', function(req, res) {
+    var input = req.body.value;
+    redis.set(req.params.key, input);
+    redis.get(req.params.key, function(err, value) {
+        res.json({'value': value});
+        pusher.trigger(req.params.key, 'set', {'value': value});
+    });
+});
+
+app.listen(port, function() {
     console.log("Listening on " + port);
 });
