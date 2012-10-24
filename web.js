@@ -6,17 +6,32 @@ var express = require('express');
 var app = express();
 app.use(express.bodyParser());
 
+/* CORS */
+app.all('*', function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
+
+app.options('*', function(req, res, next) {
+    res.send(200);
+});
+
+/* Getting data */
 app.get('/:key', function(req, res) {
     redis.get(req.params.key, function(err, value) {
         res.json({'value': value});
     });
 });
 
+/* Setting and manipulating data */
 app.put('/:key', function(req, res) {
     var key = req.params.key;
 
     var callback = function() {
         redis.get(key, function(err, value) {
+            // TODO: error handling
             res.json({'value': value});
             pusher.trigger('updates', 'update:' + key, {'value': value});
         });
@@ -48,6 +63,7 @@ app.put('/:key', function(req, res) {
     }
 });
 
+/* Deleting data */
 app.delete('/:key', function(req, res) {
     var key = req.params.key;
     redis.get(key, function(err, value) {
@@ -59,6 +75,7 @@ app.delete('/:key', function(req, res) {
     });
 });
 
+/* Launch the server */
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
     console.log("Listening on " + port);
