@@ -28,7 +28,7 @@ server.on('request', function(req, res) {
             req.on('end', function() {
                 redis.set(key, value);
                 res.end('OK');
-                pusher.trigger(key, 'set', value);
+                pusher.trigger(key, 'set', {'value': value});
             });
             break;
     }
