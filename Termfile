@@ -1,6 +1,6 @@
-# distr.io
+# radiate.io
 
-PROJECT_NAME = "distr.io"
+PROJECT_NAME = "radiate.io"
 PORT = 5000
 
 run "cd ~/Sites/#{PROJECT_NAME}"

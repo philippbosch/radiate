@@ -1,6 +1,7 @@
 {
-  "name": "distrio",
+  "name": "radiate",
   "version": "0.0.1",
+  "author": "Philipp Bosch <hello@pb.io>",
   "dependencies": {
     "express": "3.x.x",
     "redis-url": "0.1.0",
