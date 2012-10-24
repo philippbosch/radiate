@@ -24,23 +24,26 @@
         <script>
             (function() {
                 if (window.DeviceOrientationEvent) {
-                    var timeout;
+                    var currentAlpha = 0;
+                    var previousAlpha = 0;
+
                     $(window).on('deviceorientation', function(e) {
-                        var oe = e.originalEvent;
-                        $('#alpha').text(oe.alpha);
-                        $('#beta').text(oe.beta);
-                        $('#gamma').text(oe.gamma);
-                        if (!timeout) {
+                        $('#alpha').text(e.originalEvent.alpha);
+                        currentAlpha = e.originalEvent.alpha;
+                    });
+
+                    setInterval(function() {
+                        if (currentAlpha != previousAlpha) {
                             $.ajax('http://radiate.herokuapp.com/orientation', {
                                 type: 'PUT',
                                 dataType: 'json',
                                 data: {
-                                    value: (oe.alpha+0) + '|' + (oe.beta+0) + '|' + (oe.gamma+0)
+                                    value: currentAlpha
                                 }
                             });
-                            timeout = setTimeout(function() { timeout = null; }, 100);
+                            previousAlpha = currentAlpha;
                         }
-                    });
+                    }, 500);
                 }
             })();
         </script>
