@@ -1,0 +1,11 @@
+# distr.io
+
+PROJECT_NAME = "distr.io"
+PORT = 5000
+
+run "cd ~/Sites/#{PROJECT_NAME}"
+run "foreman start -p #{PORT} -f Procfile.dev"
+
+pane do
+  run "cd ~/Sites/#{PROJECT_NAME}"
+end

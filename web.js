@@ -1,11 +1,15 @@
 var http = require('http');
 var redis = require('redis-url').connect(process.env.REDISTOGO_URL);
-var pusher = require('./pusher-url').connect(process.env.PUSHER_URL);
+var pusher = require('pusher-url').connect(process.env.PUSHER_URL);
 
 var server = http.createServer();
 
 server.on('request', function(req, res) {
     var key = req.url.substr(1);
+
+    if (!key) {
+        res.end('Key missing.');
+    }
 
     switch(req.method) {
         case 'GET':
