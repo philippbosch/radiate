@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>radiate : counter</title>
+        <style>
+            body {
+              font: 300% VT323, monospace;
+              padding: 20px;
+              background: #000;
+              color: #FFF;
+            }
+
+            button {
+              font-size: inherit;
+            }
+
+            #decr, #incr {
+              position: absolute;
+              top: 0;
+              bottom: 0;
+              width: 2em;
+              padding: 5px 20px 10px;
+              -webkit-appearance: none;
+              background: rgba(255,255,255,0.1);
+              border: 0;
+              color: #000;
+            }
+
+            @media screen and (min-width: 400px) {
+              #decr, #incr {
+                width: 4em;
+              }
+              #value {
+                font-size: 200%;
+              }
+            }
+
+            #decr {
+              left: 0;
+            }
+
+            #incr {
+              right: 0;
+            }
+
+            #value {
+              position: absolute;
+              top: 50%;
+              left: 0;
+              right: 0;
+              height: 1em;
+              margin-top: -0.5em;
+              line-height: 100%;
+              text-align: center;
+            }
+        </style>
+        <link href="http://fonts.googleapis.com/css?family=VT323" rel="stylesheet" type="text/css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    </head>
+    <body>
+        <div id="value"></div>
+        <button id="decr">-</button>
+        <button id="incr">+</button>
+
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src='http://js.pusher.com/1.12/pusher.min.js'></script>
+
+        <script>
+            (function() {
+
+            var pusher = new Pusher('eed0809a13bc35456e5e');
+            var channel = pusher.subscribe('updates');
+            channel.bind('update:counter', function(data) {
+              document.getElementById('value').innerHTML = data.value;
+            });
+
+            var triggerEvent = 'ontouchend' in document.createElement('div') ? 'touchstart' : 'click';
+
+            $(document).ready(function() {
+              $.getJSON('http://radiate.herokuapp.com/counter', function(data) {
+                $('#value').text(data.value);
+              });
+            });
+
+            $('#decr').on(triggerEvent, function(e) {
+              $.ajax('http://radiate.herokuapp.com/counter', {
+                type: 'PUT',
+                dataType: 'json',
+                data: {action: 'DECR'}
+              });
+              e.stopPropagation();
+              return false;
+            });
+
+            $('#incr').on(triggerEvent, function(e) {
+              $.ajax('http://radiate.herokuapp.com/counter', {
+                type: 'PUT',
+                dataType: 'json',
+                data: {action: 'INCR'}
+              });
+              e.stopPropagation();
+              return false;
+            });
+
+            })();
+        </script>
+    </body>
+</html>
