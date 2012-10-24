@@ -1,0 +1,13 @@
+{
+  "name": "distrio",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "3.x.x",
+    "redis-url": "0.1.0",
+    "node-pusher": "0.0.2"
+  },
+  "engines": {
+    "node": "0.8.x",
+    "npm": "1.1.x"
+  }
+}
