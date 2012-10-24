@@ -64,44 +64,44 @@
         <button id="incr">+</button>
 
         <script src="http://code.jquery.com/jquery-latest.js"></script>
-        <script src='http://js.pusher.com/1.12/pusher.min.js'></script>
+        <script src="http://js.pusher.com/1.12/pusher.min.js"></script>
 
         <script>
             (function() {
 
-            var pusher = new Pusher('eed0809a13bc35456e5e');
-            var channel = pusher.subscribe('updates');
-            channel.bind('update:counter', function(data) {
-              document.getElementById('value').innerHTML = data.value;
-            });
+                var pusher = new Pusher('eed0809a13bc35456e5e');
+                var channel = pusher.subscribe('updates');
+                channel.bind('update:counter', function(data) {
+                  document.getElementById('value').innerHTML = data.value;
+                });
 
-            var triggerEvent = 'ontouchend' in document.createElement('div') ? 'touchstart' : 'click';
+                var triggerEvent = 'ontouchend' in document.createElement('div') ? 'touchstart' : 'click';
 
-            $(document).ready(function() {
-              $.getJSON('http://radiate.herokuapp.com/counter', function(data) {
-                $('#value').text(data.value);
-              });
-            });
+                $(document).ready(function() {
+                  $.getJSON('http://radiate.herokuapp.com/counter', function(data) {
+                    $('#value').text(data.value);
+                  });
+                });
 
-            $('#decr').on(triggerEvent, function(e) {
-              $.ajax('http://radiate.herokuapp.com/counter', {
-                type: 'PUT',
-                dataType: 'json',
-                data: {action: 'DECR'}
-              });
-              e.stopPropagation();
-              return false;
-            });
+                $('#decr').on(triggerEvent, function(e) {
+                  $.ajax('http://radiate.herokuapp.com/counter', {
+                    type: 'PUT',
+                    dataType: 'json',
+                    data: {action: 'DECR'}
+                  });
+                  e.stopPropagation();
+                  return false;
+                });
 
-            $('#incr').on(triggerEvent, function(e) {
-              $.ajax('http://radiate.herokuapp.com/counter', {
-                type: 'PUT',
-                dataType: 'json',
-                data: {action: 'INCR'}
-              });
-              e.stopPropagation();
-              return false;
-            });
+                $('#incr').on(triggerEvent, function(e) {
+                  $.ajax('http://radiate.herokuapp.com/counter', {
+                    type: 'PUT',
+                    dataType: 'json',
+                    data: {action: 'INCR'}
+                  });
+                  e.stopPropagation();
+                  return false;
+                });
 
             })();
         </script>

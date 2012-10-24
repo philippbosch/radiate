@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>radiate : accelerometer : publisher</title>
+        <style>
+            body {
+              font: 300% VT323, monospace;
+              padding: 20px;
+              background: #000;
+              color: #FFF;
+            }
+        </style>
+        <link href="http://fonts.googleapis.com/css?family=VT323" rel="stylesheet" type="text/css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    </head>
+    <body>
+        <div id="alpha">?</div>
+        <div id="beta">?</div>
+        <div id="gamma">?</div>
+
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="http://js.pusher.com/1.12/pusher.min.js"></script>
+
+        <script>
+            (function() {
+                var pusher = new Pusher('eed0809a13bc35456e5e');
+                var channel = pusher.subscribe('updates');
+                channel.bind('update:orientation', function(data) {
+                    var v = data.value.split('|');
+                    $('#alpha').text(v[0]);
+                    $('#beta').text(v[1]);
+                    $('#gamma').text(v[2]);
+                });
+
+            })();
+        </script>
+    </body>
+</html>
