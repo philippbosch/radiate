@@ -18,7 +18,7 @@
     Radiate.prototype.get = function(key, callback) {
       var xhr;
       xhr = new XMLHttpRequest();
-      xhr.open("GET", "" + this.server + "/counter", true);
+      xhr.open("GET", "" + this.server + "/" + key, true);
       xhr.onreadystatechange = function() {
         var data;
         if (xhr.readyState !== 4) {
@@ -28,6 +28,60 @@
         return callback(data);
       };
       return xhr.send(null);
+    };
+
+    Radiate.prototype.set = function(key, value, callback) {
+      var data, xhr;
+      xhr = new XMLHttpRequest();
+      xhr.open("PUT", "" + this.server + "/" + key, true);
+      xhr.onreadystatechange = function() {
+        var data;
+        if (xhr.readyState !== 4) {
+          return;
+        }
+        data = JSON.parse(xhr.responseText);
+        return callback(data);
+      };
+      data = {
+        value: value
+      };
+      return xhr.send(JSON.stringify(data));
+    };
+
+    Radiate.prototype.incr = function(key, callback) {
+      var data, xhr;
+      xhr = new XMLHttpRequest();
+      xhr.open("PUT", "" + this.server + "/" + key, true);
+      xhr.onreadystatechange = function() {
+        var data;
+        if (xhr.readyState !== 4) {
+          return;
+        }
+        data = JSON.parse(xhr.responseText);
+        return callback(data);
+      };
+      data = {
+        action: 'INCR'
+      };
+      return xhr.send(JSON.stringify(data));
+    };
+
+    Radiate.prototype.decr = function(key, callback) {
+      var data, xhr;
+      xhr = new XMLHttpRequest();
+      xhr.open("PUT", "" + this.server + "/" + key, true);
+      xhr.onreadystatechange = function() {
+        var data;
+        if (xhr.readyState !== 4) {
+          return;
+        }
+        data = JSON.parse(xhr.responseText);
+        return callback(data);
+      };
+      data = {
+        action: 'DECR'
+      };
+      return xhr.send(JSON.stringify(data));
     };
 
     return Radiate;
