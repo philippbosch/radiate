@@ -1,3 +1,4 @@
+var fs = require('fs');
 var http = require('http');
 var redis = require('redis-url').connect(process.env.REDISTOGO_URL);
 var pusher = require('pusher-url').connect(process.env.PUSHER_URL);
@@ -5,6 +6,17 @@ var pusher = require('pusher-url').connect(process.env.PUSHER_URL);
 var express = require('express');
 var app = express();
 app.use(express.bodyParser());
+
+/* Serve the JS client */
+app.get('/client.js', function(req, res) {
+    fs.readFile('./clients/js/radiate.js', function (err, input) {
+        if (err) throw err;
+        console.log(req.get('Host'));
+        res.set('Content-Type', 'application/javascript');
+        output = input.toString().replace('__RADIATE_SERVER__', req.protocol + '://' + req.get('Host')).replace('__PUSHER_KEY__', pusher.options.key);
+        res.send(output);
+    });
+});
 
 /* CORS */
 app.all('*', function(req, res, next) {

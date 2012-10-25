@@ -1,1 +1,2 @@
 web: supervisor web.js
+coffee: coffee -wc .
