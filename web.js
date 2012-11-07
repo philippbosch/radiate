@@ -11,7 +11,6 @@ app.use(express.bodyParser());
 app.get('/client.js', function(req, res) {
     fs.readFile('./clients/js/radiate.js', function (err, input) {
         if (err) throw err;
-        console.log(req.get('Host'));
         res.set('Content-Type', 'application/javascript');
         output = input.toString().replace('__RADIATE_SERVER__', req.protocol + '://' + req.get('Host')).replace('__PUSHER_KEY__', pusher.options.key);
         res.send(output);

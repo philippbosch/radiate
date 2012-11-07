@@ -6,45 +6,53 @@ class Radiate
     onupdate: (key, callback) ->
         @channel.bind "update:#{key}", callback
 
-    get: (key, callback) ->
+    xhr: (method, key, data, callback) ->
+        method = method.toUpperCase()
+        if not callback? and typeof(data) == "function"
+            callback = data
+            data = null
         xhr = new XMLHttpRequest()
-        xhr.open("GET", "#{@server}/#{key}", true)
+
+        xhr.open(method, "#{@server}/#{key}", true)
+
+        if method != "GET"
+            xhr.setRequestHeader('Content-Type', 'application/json')
+
         xhr.onreadystatechange = ->
             return if xhr.readyState != 4
-            data = JSON.parse(xhr.responseText)
-            callback(data)
-        xhr.send(null)
+            response = JSON.parse(xhr.responseText)
+            if typeof(callback) == "function"
+                callback(response)
+        senddata = if method == "GET" then null else JSON.stringify(data)
+        xhr.send(senddata)
+
+    get: (key, callback) ->
+        @xhr('GET', key, callback)
 
     set: (key, value, callback) ->
-        xhr = new XMLHttpRequest()
-        xhr.open("PUT", "#{@server}/#{key}", true)
-        xhr.onreadystatechange = ->
-            return if xhr.readyState != 4
-            data = JSON.parse(xhr.responseText)
-            callback(data)
-        data = value: value
-        xhr.send(JSON.stringify(data))
+        @xhr('PUT', key, value: value, callback)
 
     incr: (key, callback) ->
-        xhr = new XMLHttpRequest()
-        xhr.open("PUT", "#{@server}/#{key}", true)
-        xhr.onreadystatechange = ->
-            return if xhr.readyState != 4
-            data = JSON.parse(xhr.responseText)
-            callback(data)
-        data = action: 'INCR'
-        xhr.send(JSON.stringify(data))
+        @xhr('PUT', key, action: 'INCR', callback)
 
     decr: (key, callback) ->
-        xhr = new XMLHttpRequest()
-        xhr.open("PUT", "#{@server}/#{key}", true)
-        xhr.onreadystatechange = ->
-            return if xhr.readyState != 4
-            data = JSON.parse(xhr.responseText)
-            callback(data)
-        data = action: 'DECR'
-        xhr.send(JSON.stringify(data))
+        @xhr('PUT', key, action: 'DECR', callback)
 
 
 
 window.radiate = new Radiate('__RADIATE_SERVER__', '__PUSHER_KEY__')
+
+
+if jQuery
+    jQuery.fn.radiate = (key) ->
+        $elem = this
+        key = key || $elem.data 'radiate-key'
+
+        if key
+          radiate.get key, (data) ->
+              $elem.text data.value
+
+          radiate.onupdate key, (data) ->
+              $elem.text data.value
+        else
+          console.warn 'No key given'

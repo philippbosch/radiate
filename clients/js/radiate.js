@@ -15,73 +15,52 @@
       return this.channel.bind("update:" + key, callback);
     };
 
-    Radiate.prototype.get = function(key, callback) {
-      var xhr;
+    Radiate.prototype.xhr = function(method, key, data, callback) {
+      var senddata, xhr;
+      method = method.toUpperCase();
+      if (!(callback != null) && typeof data === "function") {
+        callback = data;
+        data = null;
+      }
       xhr = new XMLHttpRequest();
-      xhr.open("GET", "" + this.server + "/" + key, true);
+      xhr.open(method, "" + this.server + "/" + key, true);
+      if (method !== "GET") {
+        xhr.setRequestHeader('Content-Type', 'application/json');
+      }
       xhr.onreadystatechange = function() {
-        var data;
+        var response;
         if (xhr.readyState !== 4) {
           return;
         }
-        data = JSON.parse(xhr.responseText);
-        return callback(data);
+        response = JSON.parse(xhr.responseText);
+        if (typeof callback === "function") {
+          return callback(response);
+        }
       };
-      return xhr.send(null);
+      senddata = method === "GET" ? null : JSON.stringify(data);
+      return xhr.send(senddata);
+    };
+
+    Radiate.prototype.get = function(key, callback) {
+      return this.xhr('GET', key, callback);
     };
 
     Radiate.prototype.set = function(key, value, callback) {
-      var data, xhr;
-      xhr = new XMLHttpRequest();
-      xhr.open("PUT", "" + this.server + "/" + key, true);
-      xhr.onreadystatechange = function() {
-        var data;
-        if (xhr.readyState !== 4) {
-          return;
-        }
-        data = JSON.parse(xhr.responseText);
-        return callback(data);
-      };
-      data = {
+      return this.xhr('PUT', key, {
         value: value
-      };
-      return xhr.send(JSON.stringify(data));
+      }, callback);
     };
 
     Radiate.prototype.incr = function(key, callback) {
-      var data, xhr;
-      xhr = new XMLHttpRequest();
-      xhr.open("PUT", "" + this.server + "/" + key, true);
-      xhr.onreadystatechange = function() {
-        var data;
-        if (xhr.readyState !== 4) {
-          return;
-        }
-        data = JSON.parse(xhr.responseText);
-        return callback(data);
-      };
-      data = {
+      return this.xhr('PUT', key, {
         action: 'INCR'
-      };
-      return xhr.send(JSON.stringify(data));
+      }, callback);
     };
 
     Radiate.prototype.decr = function(key, callback) {
-      var data, xhr;
-      xhr = new XMLHttpRequest();
-      xhr.open("PUT", "" + this.server + "/" + key, true);
-      xhr.onreadystatechange = function() {
-        var data;
-        if (xhr.readyState !== 4) {
-          return;
-        }
-        data = JSON.parse(xhr.responseText);
-        return callback(data);
-      };
-      data = {
+      return this.xhr('PUT', key, {
         action: 'DECR'
-      };
-      return xhr.send(JSON.stringify(data));
+      }, callback);
     };
 
     return Radiate;
@@ -89,5 +68,23 @@
   })();
 
   window.radiate = new Radiate('__RADIATE_SERVER__', '__PUSHER_KEY__');
+
+  if (jQuery) {
+    jQuery.fn.radiate = function(key) {
+      var $elem;
+      $elem = this;
+      key = key || $elem.data('radiate-key');
+      if (key) {
+        radiate.get(key, function(data) {
+          return $elem.text(data.value);
+        });
+        return radiate.onupdate(key, function(data) {
+          return $elem.text(data.value);
+        });
+      } else {
+        return console.warn('No key given');
+      }
+    };
+  }
 
 }).call(this);
