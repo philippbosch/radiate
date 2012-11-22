@@ -29,6 +29,12 @@ app.options('*', function(req, res, next) {
     res.send(200);
 });
 
+/* "Home page" */
+app.get('/', function(req, res) {
+    res.json('Radiate is ready.');
+});
+
+
 /* Getting data */
 app.get('/:key', function(req, res) {
     redis.get(req.params.key, function(err, value) {
