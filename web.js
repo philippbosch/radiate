@@ -5,6 +5,7 @@ var pusher = require('pusher-url').connect(process.env.PUSHER_URL);
 
 var express = require('express');
 var app = express();
+
 app.use (function(req, res, next) {
     if ('content-type' in req.headers && req.headers['content-type'].substr(0,5) == 'text/') {
         var data='';
@@ -76,12 +77,13 @@ function getData(key, field, callback) {
 app.get('/:key/:field?', function(req, res) {
     getData(req.params.key, req.params.field, function(err, value) {
         if (err) {
-            res.send(404);
+            res.json(404, {'error': 'Not found'});
         } else {
             res.json({'value': value});
         }
     });
 });
+
 
 /* Setting and manipulating data */
 app.put('/:key', function(req, res) {
@@ -89,7 +91,7 @@ app.put('/:key', function(req, res) {
 
     var callback = function(err) {
         if (err) {
-            res(500, err);
+            res.json(500, {'error': err});
         } else {
             getData(key, function(err, value) {
                 res.json({'value': value});
@@ -124,7 +126,7 @@ app.put('/:key', function(req, res) {
             } else if (action == 'APPEND' && pl == 1) {
                 redis.append(key, params[0], callback);
             } else {
-                res.send(500);
+                res.json(500, {'error': 'Unknown action'});
             }
         } else {
             var fields = {};
@@ -140,21 +142,25 @@ app.put('/:key', function(req, res) {
             redis.hmset(key, fields, callback);
         }
     } else {
-        res.send(500);
+        res.json(500, {'error': 'Unsupported type of input'});
     }
 });
+
 
 /* Deleting data */
 app.delete('/:key', function(req, res) {
     var key = req.params.key;
     redis.get(key, function(err, value) {
         redis.del(key, function(err, deleted) {
-            res.send(204);
-            pusher.trigger('updates', 'update:' + key, {'value': null});
-            pusher.trigger('deletes', 'delete:' + key, {'deleted': deleted, 'lastvalue': value});
+            res.json({'deleted': deleted});
+            if (deleted) {
+                pusher.trigger('updates', 'update:' + key, {'value': null});
+                pusher.trigger('deletes', 'delete:' + key, {'deleted': deleted, 'lastvalue': value});
+            }
         });
     });
 });
+
 
 /* Launch the server */
 var port = process.env.PORT || 5000;
