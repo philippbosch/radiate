@@ -57,7 +57,7 @@ app.get('/', function(req, res) {
 function getData(key, field, callback) {
     if (typeof field == 'function') {
         callback = field;
-        delete field;
+        field = null;
     }
     redis.type(key, function(err, type) {
         if (type == 'string') {
@@ -131,7 +131,7 @@ app.put('/:key', function(req, res) {
         } else {
             var fields = {};
             for (var field in req.body) {
-                if (req.body.hasOwnProperty(prop)) {
+                if (req.body.hasOwnProperty(field)) {
                     if (typeof req.body[field] == 'string') {
                         fields[field] = req.body[field];
                     } else {
