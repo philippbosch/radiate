@@ -46,20 +46,23 @@
     };
 
     Radiate.prototype.set = function(key, value, callback) {
-      return this.xhr('PUT', key, {
-        value: value
-      }, callback);
+      if (!typeof value === 'object') {
+        value = {
+          _value: value
+        };
+      }
+      return this.xhr('PUT', key, value, callback);
     };
 
     Radiate.prototype.incr = function(key, callback) {
       return this.xhr('PUT', key, {
-        action: 'INCR'
+        _action: 'INCR'
       }, callback);
     };
 
     Radiate.prototype.decr = function(key, callback) {
       return this.xhr('PUT', key, {
-        action: 'DECR'
+        _action: 'DECR'
       }, callback);
     };
 

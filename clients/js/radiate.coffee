@@ -30,13 +30,15 @@ class Radiate
         @xhr('GET', key, callback)
 
     set: (key, value, callback) ->
-        @xhr('PUT', key, value: value, callback)
+        if not typeof value == 'object'
+            value = _value: value
+        @xhr('PUT', key, value, callback)
 
     incr: (key, callback) ->
-        @xhr('PUT', key, action: 'INCR', callback)
+        @xhr('PUT', key, _action: 'INCR', callback)
 
     decr: (key, callback) ->
-        @xhr('PUT', key, action: 'DECR', callback)
+        @xhr('PUT', key, _action: 'DECR', callback)
 
 
 
